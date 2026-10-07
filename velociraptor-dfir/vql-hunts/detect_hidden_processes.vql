@@ -1,0 +1,6 @@
+// Consulta VQL para Detecção de Processos Ocultos e Executáveis Deletados em Memória
+LET DeletedBinaries = SELECT Pid, Ppid, Name, CommandLine, Exe 
+FROM pslist() 
+WHERE Exe =~ "\(deleted\)$";
+
+SELECT * FROM DeletedBinaries;
