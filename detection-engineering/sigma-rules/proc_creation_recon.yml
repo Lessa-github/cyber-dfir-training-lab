@@ -1,0 +1,19 @@
+title: Local User and Network Reconnaissance Commands
+id: a812f84b-0914-4a2b-b432-841b9e248100
+status: test
+description: Detects command-line execution of system reconnaissance tools commonly used post-exploitation.
+logsource:
+    category: process_creation
+    product: linux
+detection:
+    selection:
+        Image|endswith:
+            - '/whoami'
+            - '/id'
+            - '/uname'
+            - '/netstat'
+            - '/ip'
+    condition: selection
+falsepositives:
+    - Administrative maintenance scripts
+level: medium
