@@ -1,7 +1,7 @@
 # 🛡️ Cyber DFIR Training Lab & Purple Team Automation
 
 > **Author:** Gabriel Santa Rosa Lessa  
-> **Timeline:** 2025 – Present (School Research 2025 - Aug/2026 · Intensive Hands-on Aug/2026 - Present)  
+> **Timeline:** 2025 – Present (College Studies 2025 - Aug/2026 · Intensive Hands-on Aug/2026 - Present)  
 > **Core Engine:** Velociraptor VQL (Static Go musl binary · 67 MB RAM)  
 > **Testing Scope:** 344 MITRE ATT&CK Techniques with Automated Cleanup · Air-Gapped L2 Sandbox (`vmbr1`)
 
