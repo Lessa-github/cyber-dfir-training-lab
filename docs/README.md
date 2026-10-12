@@ -7,7 +7,7 @@
 
 ---
 
-## 📋 Platform Overview
+## 📋 Platform Overview :id=platform-overview
 
 This repository documents an enterprise-grade Digital Forensics, Incident Response (DFIR), and automated adversary emulation platform architected within a lightweight, resource-bounded Proxmox VE homelab.
 
@@ -21,7 +21,7 @@ The platform allows safe detonating of malware inside an **air-gapped sandbox (`
 
 ---
 
-## ⚡ DFIR with 67 MB RAM: The Benchmark
+## ⚡ DFIR with 67 MB RAM: The Benchmark :id=dfir-benchmark
 
 Enterprise SIEMs like Wazuh, Elastic Security, and Splunk require substantial memory and disk overhead just to maintain the log ingestion pipeline. This lab adopts surgical on-demand endpoint querying:
 
@@ -42,7 +42,7 @@ Instead of indexing millions of harmless system events into an SSD-wearing datab
 
 ---
 
-## 🧱 Air-Gapped Sandbox (`vmbr1`)
+## 🧱 Air-Gapped Sandbox (vmbr1) :id=airgapped-sandbox
 
 ```mermaid
 flowchart TD
@@ -71,7 +71,7 @@ flowchart TD
 
 ---
 
-## 🎭 INetSim Traffic Simulation
+## 🎭 INetSim Traffic Simulation :id=inetsim-simulation
 
 Modern malware samples execute sandbox evasion routines by checking for internet connectivity. The **INetSim** daemon fools executable payloads into revealing their multi-stage behavior:
 * **Fake DNS (Port 53):** Resolves all queried domain names to `192.168.199.202`.
@@ -80,7 +80,7 @@ Modern malware samples execute sandbox evasion routines by checking for internet
 
 ---
 
-## 🎯 MITRE ATT&CK Coverage (344 Techniques)
+## 🎯 MITRE ATT&CK Coverage (344 Techniques) :id=mitre-attack
 
 Our purple teaming pipeline executes atomic test payloads with guaranteed state cleanup:
 
@@ -95,7 +95,7 @@ Our purple teaming pipeline executes atomic test payloads with guaranteed state 
 
 ---
 
-## 🔍 Custom VQL Threat Hunting Artifacts
+## 🔍 Custom VQL Threat Hunting Artifacts :id=vql-hunting
 
 ### 1. Hunting Unlinked Process Binaries (Process Hollowing / Masquerading)
 
@@ -125,7 +125,7 @@ sources:
 
 ---
 
-## 🛠️ homelab-soc CLI Orchestrator
+## 🛠️ homelab-soc CLI Orchestrator :id=soc-cli
 
 The command-line interface provides unified control over the incident response pipeline:
 
@@ -150,9 +150,10 @@ Options:
 
 ---
 
-## 🔗 Connected Repositories & Live Portals
+## 🔗 Connected Portals & Repositories :id=connected-portals
 
 * 🏛️ **[Homelab Zero-Trust](https://lessa-github.github.io/homelab-zero-trust-infra/)** — Network Topology, Proxmox VE & SRE Hardening.
 * 🧠 **[Sovereign AI Workspace](https://lessa-github.github.io/sovereign-ai-workspace/)** — Multi-Provider Gateway, Caveman Compression & Private Search.
 * ⚰️ **[Homelab Graveyard & Lessons Learned](https://lessa-github.github.io/homelab-graveyard-and-lessons-learned/)** — SRE Post-Mortems on Decommissioned Stacks.
+* 🌐 **[Gabriel Lessa Portfolio](https://lessa-github.github.io/gabriel-portfolio/)** — Cybersecurity Risk Management & Homelab Engineering.
 * 🔒 **[Zero-Knowledge Secret Framework](https://github.com/Lessa-github/zero-knowledge-secret-framework)** — Ephemeral Memory Secret Injection Engine (Private).

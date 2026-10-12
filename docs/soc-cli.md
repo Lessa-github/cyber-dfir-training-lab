@@ -1,10 +1,10 @@
-# 🛠️ homelab-soc: Orquestrador CLI de Resposta a Incidentes
+# 🛠️ homelab-soc: Incident Response & DFIR CLI Orchestrator
 
-O `homelab-soc.py` conecta-se via API gRPC ao servidor Velociraptor e à esteira Atomic Red Team para automatizar simulações e contenções.
+`homelab-soc.py` interfaces over gRPC with the Velociraptor forensic server and the Atomic Red Team harness to automate threat emulation, detection validation, and host containment.
 
 ---
 
-## 💻 Interface de Linha de Comando (`--help`)
+## 💻 Command Line Interface (`--help`)
 
 ```text
 ===================================================================

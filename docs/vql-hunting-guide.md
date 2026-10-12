@@ -1,16 +1,16 @@
-# 🔍 Guia de Consultas VQL (Velociraptor Query Language)
+# 🔍 VQL Threat Hunting Guide (Velociraptor Query Language)
 
-O VQL é uma linguagem declarativa similar a SQL que permite aos analistas de segurança fazer consultas complexas em arquivos, processos, conexões e chaves de registro diretamente nos endpoints.
+VQL is a declarative SQL-like query language empowering security analysts to execute expressive investigations across filesystems, process trees, network sockets, and registry keys directly on remote endpoints.
 
 ---
 
-## ⚡ Exemplos Práticos de VQL Utilizados no Laboratório
+## ⚡ Production VQL Threat Hunting Artifacts
 
-### 1. Caça a Processos com Executáveis Ocultos ou Desvinculados
+### 1. Hunting Unlinked or In-Memory Hidden Processes
 
 ```sql
 name: Custom.Hunt.HiddenProcesses
-description: Localiza processos em execução onde o binário no disco foi apagado ou renomeado.
+description: Identifies running processes whose disk binaries have been unlinked or deleted from the filesystem.
 
 sources:
   - query: |
@@ -19,11 +19,11 @@ sources:
       WHERE Exe =~ "deleted" OR NOT Exe
 ```
 
-### 2. Auditoria de Persistência em Inicialização (Linux Systemd)
+### 2. Auditing Persistence Mechanisms in Linux Systemd Units
 
 ```sql
 name: Custom.Hunt.SuspiciousSystemdUnits
-description: Varre serviços recém-adicionados no systemd procurando scripts em /tmp ou /dev/shm.
+description: Scans newly created or modified systemd services referencing execution binaries located in /tmp or /dev/shm.
 
 sources:
   - query: |

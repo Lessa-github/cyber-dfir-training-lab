@@ -1,30 +1,30 @@
-# 🧱 Sandbox Air-Gapped & Simulação INetSim
+# 🧱 Air-Gapped Sandbox & INetSim Simulation
 
-Para detonar malwares com segurança absoluta e sem risco de contaminação cruzada com a rede de produção ou com a internet residencial, construímos uma **bridge Proxmox estritamente isolada (`vmbr1`)**.
+To detonate live malware samples safely without cross-contamination risks to production services or the residential WAN, the lab operates an **isolated Proxmox L2 virtual bridge (`vmbr1`)**.
 
 ---
 
-## 🔒 Arquitetura da Bridge `vmbr1`
+## 🔒 Virtual Bridge Architecture (`vmbr1`)
 
 ```mermaid
 flowchart LR
-    subgraph AIRGAPPED_NET ["Bridge Isolada vmbr1 (192.168.199.0/24)"]
+    subgraph AIRGAPPED_NET ["Isolated Bridge vmbr1 (192.168.199.0/24)"]
         direction TB
-        MalwareTarget["VM Cobaia (192.168.199.205)<br>[Malware Executando]"]
-        INetSim["CT INetSim (192.168.199.202)<br>[Serviços Falsos de Internet]"]
-        VeloAgent["Velociraptor Agent<br>[Coleta de Artefatos Forenses]"]
+        MalwareTarget["Victim Detonation VM (192.168.199.205)<br>[Malware Executing]"]
+        INetSim["CT INetSim (192.168.199.202)<br>[Synthetic Internet Daemons]"]
+        VeloAgent["Velociraptor Agent<br>[Forensic Artifact Ingestion]"]
     end
 
-    MalwareTarget -->|Consultas DNS Sintéticas (Porta 53)| INetSim
-    MalwareTarget -->|Payloads HTTP/HTTPS Falsos| INetSim
-    MalwareTarget -.->|Detecção em Memória| VeloAgent
+    MalwareTarget -->|Synthetic DNS Queries (Port 53)| INetSim
+    MalwareTarget -->|Mock HTTP/HTTPS Handshakes| INetSim
+    MalwareTarget -.->|Live In-Memory Telemetry| VeloAgent
 ```
 
 ---
 
-## 🎭 O Papel do INetSim
+## 🎭 The Role of INetSim Emulation
 
-Muitos malwares modernos encerram sua execução imediatamente se detectarem que a internet está inativa. O **INetSim** resolve esse problema simulando serviços comuns da internet:
-* **DNS Falso:** Responde a qualquer domínio com o IP do próprio simulador (`192.168.199.202`).
-* **HTTP / HTTPS:** Retorna códigos HTTP 200 e páginas HTML fictícias.
-* **SMTP / FTP / NTP:** Responde requisições de e-mail e sincronização de tempo, enganando o malware e forçando-o a revelar seus estágios secundários de infecção na memória.
+Modern malware families often terminate execution early upon detecting an inactive internet connection. **INetSim** eliminates sandbox evasion by emulating standard internet protocols:
+* **Synthetic DNS Resolver:** Returns the simulator's IP (`192.168.199.202`) for any queried domain name.
+* **HTTP / HTTPS Emulators:** Serves mock HTTP 200 responses and generic payload files to satisfy secondary droppers.
+* **SMTP / FTP / NTP Daemons:** Sinks outbound credentials and synchronizes system clocks, inducing malware to execute subsequent in-memory stages without egress leaks.

@@ -1,29 +1,29 @@
-# ⚡ Velociraptor: DFIR Corporativo em 67 MB de RAM
+# ⚡ Velociraptor: Enterprise DFIR in a 67 MB RAM Baseline
 
-O **Velociraptor** é uma plataforma avançada de resposta a incidentes e caça digital desenvolvida originalmente por pesquisadores da Google/Recursoft e escrita em Go nativo.
+**Velociraptor** is an advanced digital forensics, incident response (DFIR), and threat hunting platform written in native Go, originally designed by researchers at Google and Recursoft.
 
 ---
 
-## 📊 Análise Comparativa de Hardware
+## 📊 Forensic Platform Hardware Benchmark
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│             BENCHMARK FORENSE: CONSUMO EM AMBIENTE HOMELAB             │
+│             FORENSIC BENCHMARK: HOMELAB HIGH-DENSITY PROFILE           │
 ├────────────────────────┬─────────────┬─────────────┬───────────────────┤
-│ Plataforma             │ RAM Idle    │ CPU Médio   │ Armazenamento Mês │
+│ Platform               │ Idle RAM    │ Average CPU │ Monthly Storage   │
 ├────────────────────────┼─────────────┼─────────────┼───────────────────┤
-│ Wazuh + OpenSearch     │ ~6.200 MB   │ 12 - 25%    │ ~45 GB            │
-│ Splunk Enterprise      │ ~4.800 MB   │ 10 - 18%    │ ~60 GB            │
+│ Wazuh + OpenSearch     │ ~6,200 MB   │ 12 - 25%    │ ~45 GB            │
+│ Splunk Enterprise      │ ~4,800 MB   │ 10 - 18%    │ ~60 GB            │
 │ Velociraptor Server    │ 67 MB       │ < 1.5%      │ < 2 GB            │
-└────────────────────────┴─────────────┴─────────────┴───────────────────┤
-  Redução de Footprint de Memória: 98.9%
+└────────────────────────┴─────────────┴─────────────┴───────────────────┘
+  Memory Footprint Reduction: 98.9%
 ```
 
 ---
 
-## 🔒 Arquitetura de Comunicação mTLS
+## 🔒 Bidirectional mTLS Agent Communication Architecture
 
-Os clientes comunicam-se com o servidor através de canais gRPC bidirecionais mutuamente autenticados com certificados criptográficos dedicados:
-* **Canal Criptografado:** Criptografia TLS 1.3 ponta a ponta.
-* **Polling Leve:** Agentes mantêm sessões HTTP/2 ativas com quase zero consumo de CPU em repouso.
-* **Execução em Memória:** Quando o analista dispara uma *Hunt*, o código VQL é interpretado na memória volátil do agente sem gravar binários em disco.
+Endpoint agents interface with the central server over bidirectional gRPC channels secured with mutual TLS (mTLS):
+* **Cryptographic Tunneling:** TLS 1.3 point-to-point encryption for all forensic telemetry.
+* **Lightweight Session Polling:** Agents maintain persistent HTTP/2 sessions with near-zero idle CPU consumption.
+* **In-Memory Query Evaluation:** When an investigator dispatches a *Hunt*, declarative VQL is evaluated directly within agent process memory, avoiding forensic disk contamination.
