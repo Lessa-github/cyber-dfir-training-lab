@@ -1,0 +1,6 @@
+* [Visão Geral](README.md)
+* [Velociraptor (67MB RAM)](velociraptor-architecture.md)
+* [Sandbox Air-Gapped (vmbr1)](airgapped-sandbox.md)
+* [Purple Teaming MITRE ATT&CK](purple-team-mitre.md)
+* [Guia de Consultas VQL](vql-hunting-guide.md)
+* [Orquestrador homelab-soc](soc-cli.md)
