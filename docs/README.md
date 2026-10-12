@@ -45,25 +45,31 @@ Instead of indexing millions of harmless system events into an SSD-wearing datab
 ## 🧱 Air-Gapped Sandbox (vmbr1) :id=airgapped-sandbox
 
 ```mermaid
-flowchart TD
-    subgraph HYPERVISOR ["Proxmox VE Hypervisor Host"]
-        Bridge0["vmbr0 (Production Network / 172.28.40.0/24)"]
-        Bridge1["vmbr1 (Air-Gapped Sandbox / 192.168.199.0/24)"]
+graph LR
+    subgraph HYPERVISOR ["1. Proxmox VE Host"]
+        direction TB
+        VMBR0["vmbr0 (Production Network)"]
+        VMBR1["vmbr1 (Air-Gapped Switch · No WAN)"]
     end
 
-    subgraph PROD_NET ["Production & Monitoring"]
-        Bridge0 --> VelServer["Velociraptor Server (IP: 172.28.40.123)"]
-        Bridge0 --> Admin["SOC Analyst Workstation"]
+    subgraph PROD ["2. SOC Telemetry Pipeline"]
+        VServer["Velociraptor Server<br>VQL Query Engine"]
     end
 
-    subgraph ISOLATED_SANDBOX ["Strictly Contained Detonation Environment"]
-        Bridge1 --> Victim1["VM 205 Lab Target (Metasploitable / Windows Test)"]
-        Bridge1 --> INetSim["CT 202 INetSim Daemon (Fake DNS, HTTP, SMTP)"]
-        Bridge1 --> VeloAgent["Velociraptor Client (Endpoint Telemetry)"]
+    subgraph SANDBOX ["3. Isolated Detonation Zone (192.168.199.0/24)"]
+        direction TB
+        Victim["Victim Target (VM 205)<br>Metasploitable / Test Host"]
+        INetSim["INetSim Daemon (CT 202)<br>Fake DNS, HTTP & SMTP"]
+        VAgent["Velociraptor Agent<br>Real-Time Memory Sensor"]
     end
 
-    VelServer -.->|Mutual mTLS Dedicated Pipe| VeloAgent
-    Victim1 -->|All Synthetic Traffic Trapped| INetSim
+    VMBR0 --> VServer
+    VMBR1 --> Victim
+    VMBR1 --> INetSim
+    VMBR1 --> VAgent
+
+    Victim -->|"Trapped L2 Traffic"| INetSim
+    VServer -.->|"Dedicated mTLS Channel"| VAgent
 ```
 
 ### Subnet Isolation Policy
