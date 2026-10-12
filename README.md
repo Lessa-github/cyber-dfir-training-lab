@@ -5,81 +5,78 @@
 [![Engine](https://img.shields.io/badge/DFIR-Velociraptor_67MB_RAM-10b981?style=for-the-badge&logo=go&logoColor=white)](https://docs.velociraptor.app)
 [![Status](https://img.shields.io/badge/Sandbox-Airgapped_vmbr1-blue?style=for-the-badge)](https://lessa-github.github.io/gabriel-portfolio/)
 
-Plataforma de Forense Digital, Resposta a Incidentes (DFIR) e simulação de adversários automatizada, construída em ambiente isolado no Proxmox VE.
+Autonomous Digital Forensics, Incident Response (DFIR), and purple team adversarial emulation platform built inside an isolated Proxmox VE environment.
 
-O laboratório permite **detonar malwares em sandbox air-gapped (`vmbr1`) e validar 344 técnicas MITRE ATT&CK** sem depender de SIEMs pesados baseados em Java ou Elasticsearch que exaurem o hardware do laboratório.
+The lab provides safe malware detonation inside an **air-gapped sandbox (`vmbr1`) and validates 344 MITRE ATT&CK techniques** without relying on heavy Java or Elasticsearch SIEM clusters.
 
 ---
 
-## ⚡ Destaque de Engenharia: DFIR com 67 MB de RAM
+## ⚡ Engineering Highlight: Enterprise DFIR in 67 MB RAM
 
-Enquanto clusters convencionais de Wazuh, Elastic Security ou Splunk exigem entre **4 e 8 GB de RAM** apenas para manter a esteira básica de ingestão de logs funcionando, este laboratório adota uma abordagem moderna e enxuta:
-* **Velociraptor Server:** Compilado em binário estático Go para Linux musl, consumindo exatamente **67 MB de RAM física**.
-* **Consultas VQL (Velociraptor Query Language):** Caça a anomalias em velocidade de memória diretamente nos endpoints, coletando apenas os deltas e artefatos necessários.
-* **Redução Drástica de Armazenamento:** Elimina terabytes de índices de logs ruidosos; os artefatos são puxados sob demanda via queries expressivas.
+While conventional Wazuh, Elastic Security, or Splunk clusters require between **4 and 8 GB of RAM** just to keep the ingestion stack operational, this lab deploys a lean, high-velocity architecture:
+* **Velociraptor Server:** Static Go binary compiled for Linux musl, running with an exact **67 MB physical RAM footprint**.
+* **VQL (Velociraptor Query Language):** Live memory-speed anomaly hunting across endpoints, collecting only necessary forensic artifacts.
+* **Storage Reduction:** Eliminates terabytes of verbose log indexing; artifacts are pulled on demand via declarative queries.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│             COMPARATIVO DE CONSUMO DE RECURSOS EM HOMELAB              │
+│               HOMELAB FORENSIC RESOURCE CONSUMPTION BENCHMARK          │
 ├────────────────────────┬─────────────┬─────────────┬───────────────────┤
-│ Solução                │ RAM em Idle │ CPU Médio   │ Armazenamento Mês │
+│ Platform               │ Idle RAM    │ Average CPU │ Monthly Disk I/O  │
 ├────────────────────────┼─────────────┼─────────────┼───────────────────┤
-│ Wazuh + Elasticsearch  │ ~6.200 MB   │ 12-25%      │ ~45 GB (Índices)  │
-│ Splunk Enterprise      │ ~4.800 MB   │ 10-18%      │ ~60 GB (Indexed)  │
+│ Wazuh + OpenSearch     │ ~6,200 MB   │ 12 - 25%    │ ~45 GB (Indices)  │
+│ Splunk Enterprise      │ ~4,800 MB   │ 10 - 18%    │ ~60 GB (Indexed)  │
 │ Velociraptor (Go Core) │ 67 MB       │ < 1.5%      │ < 2 GB (Raw DFIR) │
 └────────────────────────┴─────────────┴─────────────┴───────────────────┤
-  Economia de Hardware: 98.9% de redução de memória RAM física!
+  Hardware Efficiency: 98.9% physical RAM reduction!
 ```
 
 ---
 
-## 📐 Topologia da Sandbox Air-Gapped (`vmbr1`)
+## 📐 Air-Gapped Sandbox Topology (`vmbr1`)
 
 ```mermaid
 flowchart TD
-    subgraph HYPERVISOR ["Proxmox VE Hypervisor"]
-        Bridge0["vmbr0 (Produção Segura / 172.28.40.0/24)"]
+    subgraph HYPERVISOR ["Proxmox VE Hypervisor Host"]
+        Bridge0["vmbr0 (Production Network / 172.28.40.0/24)"]
         Bridge1["vmbr1 (Air-Gapped Sandbox / 192.168.199.0/24)"]
     end
 
-    subgraph PROD ["Rede Operacional"]
-        Bridge0 --> VelServer["Velociraptor DFIR Server (IP: 172.28.40.123)"]
-        Bridge0 --> Admin["Admin Console"]
+    subgraph PROD_NET ["Production & Monitoring"]
+        Bridge0 --> VelServer["Velociraptor Server (IP: 172.28.40.123)"]
+        Bridge0 --> Admin["SOC Analyst Workstation"]
     end
 
-    subgraph ISOLATED_SANDBOX ["Ambiente de Detonação Totalmente Isolado"]
-        Bridge1 --> Victim1["VM 205 Cobaia (Metasploitable / Windows Test)"]
-        Bridge1 --> INetSim["CT 202 INetSim (Serviços Falsos: DNS, HTTP, SMTP)"]
-        Bridge1 --> VeloAgent["Velociraptor Agent (Endpoint Telemetry)"]
+    subgraph ISOLATED_SANDBOX ["Strictly Contained Detonation Environment"]
+        Bridge1 --> Victim1["VM 205 Lab Target (Metasploitable / Windows Test)"]
+        Bridge1 --> INetSim["CT 202 INetSim Daemon (Fake DNS, HTTP, SMTP)"]
+        Bridge1 --> VeloAgent["Velociraptor Client (Endpoint Telemetry)"]
     end
 
-    VelServer -.->|Canal Seguro mTLS Unidirecional| VeloAgent
-    Victim1 -->|Tráfego Simulado Retido| INetSim
+    VelServer -.->|Mutual mTLS Dedicated Pipe| VeloAgent
+    Victim1 -->|All Synthetic Traffic Trapped| INetSim
 ```
 
 ---
 
-## 🎯 Purple Teaming & Cobertura MITRE ATT&CK
+## 🎯 Purple Teaming & MITRE ATT&CK Coverage
 
-A esteira de testes automatizada dispara técnicas controladas do **Atomic Red Team** com garantia de auto-limpeza (`cleanup` pós-execução):
+The automated test harness executes atomic tests with guaranteed post-run cleanup:
 
-| Tática MITRE | Técnica Testada | Artefato de Caça VQL |
+| MITRE ATT&CK Tactic | Technique ID & Name | Forensic VQL Artifact |
 | :--- | :--- | :--- |
-| **Execution** | T1059.001 (PowerShell Obfuscated) | `Generic.Client.ProcessTracker` |
-| **Persistence** | T1547.001 (Registry Run Keys) | `Windows.Sys.Autoruns` |
-| **Privilege Escalation** | T1068 (Kernel Exploits / Token Impersonation) | `Linux.Sys.PrivilegeAudit` |
-| **Defense Evasion** | T1070.004 (File Deletion / Timestomp) | `Windows.NTFS.MFT` / `Linux.Search.FileFinder` |
-| **Credential Access** | T1003.001 (LSASS Memory Dumping) | `Windows.Detection.MemoryInjection` |
+| **Execution** | T1059.001 (PowerShell Obfuscated Commands) | `Generic.Client.ProcessTracker` |
+| **Persistence** | T1547.001 (Registry Run Keys & Startup Folder) | `Windows.Sys.Autoruns` |
+| **Privilege Escalation** | T1068 (Exploitation for Privilege Escalation) | `Linux.Sys.PrivilegeAudit` |
+| **Defense Evasion** | T1070.004 (File Deletion & Timestomping) | `Windows.NTFS.MFT` / `Linux.Search.FileFinder` |
+| **Credential Access** | T1003.001 (LSASS Process Memory Dumping) | `Windows.Detection.MemoryInjection` |
 | **Discovery** | T1082 (System Information Discovery) | `Generic.System.Info` |
 
 ---
 
 ## 🛠️ CLI Orchestrator: `homelab-soc.py`
 
-O utilitário CLI automatiza a simulação e a resposta forense:
-
-```bash
-$ python3 purple-team-automation/homelab-soc.py --help
+```text
 ===================================================================
   HOMELAB-SOC - Autonomous Incident Response & DFIR Orchestrator
 ===================================================================
@@ -100,6 +97,8 @@ Options:
 
 ---
 
-## 🌐 Documentação Web Completa (Live Docsify)
+## 🌐 Live Technical Documentation
+
+Explore the complete single-page interactive whitepaper with smooth section scrolling:
 
 👉 **[https://lessa-github.github.io/cyber-dfir-training-lab/](https://lessa-github.github.io/cyber-dfir-training-lab/)**

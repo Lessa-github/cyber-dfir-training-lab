@@ -1,27 +1,158 @@
 # 🛡️ Cyber DFIR Training Lab & Purple Team Automation
 
-> **Autor:** Gabriel Santa Rosa Lessa  
-> **Linha do Tempo:** 2025 – Presente  
-> **Foco:** Detecção Comportamental · Velociraptor VQL · Simulação Adversarial Controlada · Sandbox Air-Gapped
-
-Bem-vindo à documentação técnica do laboratório de Forense Digital, Resposta a Incidentes (DFIR) e Purple Teaming.
-
----
-
-## ⚡ A Filosofia da Detecção Cirúrgica
-
-Muitas organizações acreditam erroneamente que segurança cibernética exige clusters gigantescos de armazenamento para indexar cada linha de log que um sistema operacional gera.
-
-Neste laboratório, demonstramos a superioridade técnica da **Caça Forense Direcionada no Endpoint**:
-1. O servidor central consome apenas **67 MB de memória RAM**.
-2. Os agentes executam consultas **VQL** diretamente na memória do endpoint sob demanda.
-3. Menos de 1% do ruído de rede e disco é gerado em comparação a esteiras de SIEM tradicionais.
-4. Cobertura formal contra as táticas da matriz **MITRE ATT&CK Enterprise**.
+> **Author:** Gabriel Santa Rosa Lessa  
+> **Timeline:** 2025 – Present (School Research 2025 - Aug/2026 · Intensive Hands-on Aug/2026 - Present)  
+> **Core Engine:** Velociraptor VQL (Static Go musl binary · 67 MB RAM)  
+> **Testing Scope:** 344 MITRE ATT&CK Techniques with Automated Cleanup · Air-Gapped L2 Sandbox (`vmbr1`)
 
 ---
 
-## 🧭 Linha do Tempo
+## 📋 Platform Overview
 
-* **Outubro/2025 (Fase Escolar / Brasil):** Estudos teóricos de contenção de malwares, princípios de air-gapping e análise de artefatos forenses.
-* **Agosto/2026 (Pós-Formatura):** Criação da bridge física isolada `vmbr1` no Proxmox VE e implantação do INetSim.
-* **Outubro/2026 (Automação Total):** Rollout do servidor Velociraptor, execução de 344 testes do Atomic Red Team com auto-cleanup e pipeline de conversão de regras Sigma.
+This repository documents an enterprise-grade Digital Forensics, Incident Response (DFIR), and automated adversary emulation platform architected within a lightweight, resource-bounded Proxmox VE homelab.
+
+The platform allows safe detonating of malware inside an **air-gapped sandbox (`vmbr1`)** and executing **344 MITRE ATT&CK techniques** without depending on heavy Java or Elasticsearch SIEM clusters that monopolize host resources.
+
+### Architectural Pillars:
+* **Endpoint Telemetry in 67 MB RAM:** Velociraptor compiled in static Go replacing heavyweight 6 GB Elasticsearch stacks.
+* **Deterministic L2 Isolation:** Completely air-gapped Linux bridge (`vmbr1` on `192.168.199.0/24`) with fake internet simulation (INetSim).
+* **Automated Purple Teaming:** Atomic Red Team orchestration runner with guaranteed post-execution cleanup.
+* **Declarative Threat Hunting:** Real-time memory and filesystem anomaly detection using Velociraptor Query Language (VQL).
+
+---
+
+## ⚡ DFIR with 67 MB RAM: The Benchmark
+
+Enterprise SIEMs like Wazuh, Elastic Security, and Splunk require substantial memory and disk overhead just to maintain the log ingestion pipeline. This lab adopts surgical on-demand endpoint querying:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│               HOMELAB FORENSIC RESOURCE CONSUMPTION BENCHMARK          │
+├────────────────────────┬─────────────┬─────────────┬───────────────────┤
+│ Platform               │ Idle RAM    │ Average CPU │ Monthly Disk I/O  │
+├────────────────────────┼─────────────┼─────────────┼───────────────────┤
+│ Wazuh + OpenSearch     │ ~6,200 MB   │ 12 - 25%    │ ~45 GB (Indices)  │
+│ Splunk Enterprise      │ ~4,800 MB   │ 10 - 18%    │ ~60 GB (Indexed)  │
+│ Velociraptor (Go Core) │ 67 MB       │ < 1.5%      │ < 2 GB (Raw DFIR) │
+└────────────────────────┴─────────────┴─────────────┴───────────────────┤
+  Hardware Efficiency: 98.9% physical RAM reduction!
+```
+
+Instead of indexing millions of harmless system events into an SSD-wearing database, the analyst queries live endpoint memory at native speed using VQL.
+
+---
+
+## 🧱 Air-Gapped Sandbox (`vmbr1`)
+
+```mermaid
+flowchart TD
+    subgraph HYPERVISOR ["Proxmox VE Hypervisor Host"]
+        Bridge0["vmbr0 (Production Network / 172.28.40.0/24)"]
+        Bridge1["vmbr1 (Air-Gapped Sandbox / 192.168.199.0/24)"]
+    end
+
+    subgraph PROD_NET ["Production & Monitoring"]
+        Bridge0 --> VelServer["Velociraptor Server (IP: 172.28.40.123)"]
+        Bridge0 --> Admin["SOC Analyst Workstation"]
+    end
+
+    subgraph ISOLATED_SANDBOX ["Strictly Contained Detonation Environment"]
+        Bridge1 --> Victim1["VM 205 Lab Target (Metasploitable / Windows Test)"]
+        Bridge1 --> INetSim["CT 202 INetSim Daemon (Fake DNS, HTTP, SMTP)"]
+        Bridge1 --> VeloAgent["Velociraptor Client (Endpoint Telemetry)"]
+    end
+
+    VelServer -.->|Mutual mTLS Dedicated Pipe| VeloAgent
+    Victim1 -->|All Synthetic Traffic Trapped| INetSim
+```
+
+### Subnet Isolation Policy
+* **`192.168.199.0/24`:** Dedicated to `vmbr1`. Has **no default gateway** and **no NAT forwarding rules**. Any malware payload attempting external command-and-control (C2) communication is permanently trapped inside the hypervisor Layer 2 boundary.
+
+---
+
+## 🎭 INetSim Traffic Simulation
+
+Modern malware samples execute sandbox evasion routines by checking for internet connectivity. The **INetSim** daemon fools executable payloads into revealing their multi-stage behavior:
+* **Fake DNS (Port 53):** Resolves all queried domain names to `192.168.199.202`.
+* **Fake HTTP / HTTPS (Ports 80/443):** Serves synthetic HTTP 200 OK responses with dummy file downloads.
+* **Fake SMTP / IRC / NTP:** Emulates communication channels, prompting the malware to unpack its memory payload for Velociraptor inspection.
+
+---
+
+## 🎯 MITRE ATT&CK Coverage (344 Techniques)
+
+Our purple teaming pipeline executes atomic test payloads with guaranteed state cleanup:
+
+| MITRE ATT&CK Tactic | Technique ID & Name | Forensic VQL Artifact |
+| :--- | :--- | :--- |
+| **Execution** | T1059.001 (PowerShell Obfuscated Commands) | `Generic.Client.ProcessTracker` |
+| **Persistence** | T1547.001 (Registry Run Keys & Startup Folder) | `Windows.Sys.Autoruns` |
+| **Privilege Escalation** | T1068 (Exploitation for Privilege Escalation) | `Linux.Sys.PrivilegeAudit` |
+| **Defense Evasion** | T1070.004 (File Deletion & Timestomping) | `Windows.NTFS.MFT` / `Linux.Search.FileFinder` |
+| **Credential Access** | T1003.001 (LSASS Process Memory Dumping) | `Windows.Detection.MemoryInjection` |
+| **Discovery** | T1082 (System Information Discovery) | `Generic.System.Info` |
+
+---
+
+## 🔍 Custom VQL Threat Hunting Artifacts
+
+### 1. Hunting Unlinked Process Binaries (Process Hollowing / Masquerading)
+
+```sql
+name: Custom.Hunt.HiddenProcesses
+description: Locates active running processes where the executable disk binary was unlinked or deleted.
+
+sources:
+  - query: |
+      SELECT Pid, Ppid, Name, CommandLine, Exe, Username
+      FROM pslist()
+      WHERE Exe =~ "deleted" OR NOT Exe
+```
+
+### 2. Hunting Suspicious Persistence (Linux Systemd Services)
+
+```sql
+name: Custom.Hunt.SuspiciousSystemdUnits
+description: Audits newly registered systemd units pointing to volatile storage (/tmp or /dev/shm).
+
+sources:
+  - query: |
+      SELECT Name, Path, ServiceContent
+      FROM systemd()
+      WHERE ServiceContent =~ "(shm|tmp|nc|bash -i)"
+```
+
+---
+
+## 🛠️ homelab-soc CLI Orchestrator
+
+The command-line interface provides unified control over the incident response pipeline:
+
+```text
+===================================================================
+  HOMELAB-SOC - Autonomous Incident Response & DFIR Orchestrator
+===================================================================
+Usage: ./homelab-soc [COMMAND] [ARGUMENTS]
+
+Commands:
+  hunt <vql_artifact>      Execute a forensic threat hunt across all endpoints
+  simulate <mitre_id>      Trigger Atomic Red Team technique in air-gapped target
+  verify <sigma_rule>      Validate if recent telemetry triggered a detection rule
+  quarantine <client_id>   Isolate target endpoint at the kernel bridge layer
+
+Options:
+  --target-ct <id>         Specify target LXC or VM ID (default: test sandbox)
+  --format <table|json>    Output presentation format
+  --dry-run                Simulate execution without running atomic payload
+  --help                   Display command options and forensic syntax
+```
+
+---
+
+## 🔗 Connected Repositories & Live Portals
+
+* 🏛️ **[Homelab Zero-Trust](https://lessa-github.github.io/homelab-zero-trust-infra/)** — Network Topology, Proxmox VE & SRE Hardening.
+* 🧠 **[Sovereign AI Workspace](https://lessa-github.github.io/sovereign-ai-workspace/)** — Multi-Provider Gateway, Caveman Compression & Private Search.
+* ⚰️ **[Homelab Graveyard & Lessons Learned](https://lessa-github.github.io/homelab-graveyard-and-lessons-learned/)** — SRE Post-Mortems on Decommissioned Stacks.
+* 🔒 **[Zero-Knowledge Secret Framework](https://github.com/Lessa-github/zero-knowledge-secret-framework)** — Ephemeral Memory Secret Injection Engine (Private).
