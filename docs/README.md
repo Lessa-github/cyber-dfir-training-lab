@@ -38,31 +38,18 @@ Instead of indexing millions of harmless system events into an SSD-wearing datab
 ## 🧱 Air-Gapped Sandbox (vmbr1) :id=airgapped-sandbox
 
 ```mermaid
-graph LR
-    subgraph HYPERVISOR ["1. Proxmox VE Host"]
-        direction TB
-        VMBR0["vmbr0 (Production Network)"]
-        VMBR1["vmbr1 (Air-Gapped Switch · No WAN)"]
+flowchart LR
+    subgraph SANDBOX ["Air-Gapped Sandbox (vmbr1 · 192.168.199.0/24)"]
+        Victim["Victim Target (VM 205)<br>Metasploitable 2"]
+        INetSim["INetSim Fake Net (CT 202)<br>Simulated DNS, HTTP & SMTP"]
+        Victim <-->|"Trapped L2 Traffic"| INetSim
     end
 
-    subgraph PROD ["2. SOC Telemetry Pipeline"]
-        VServer["Velociraptor Server<br>VQL Query Engine"]
+    subgraph PROD ["Production Zone (vmbr0)"]
+        VServer["Velociraptor Server (CT 123)<br>VQL Hunting Engine (67 MB RAM)"]
     end
 
-    subgraph SANDBOX ["3. Isolated Detonation Zone (192.168.199.0/24)"]
-        direction TB
-        Victim["Victim Target (VM 205)<br>Metasploitable / Test Host"]
-        INetSim["INetSim Daemon (CT 202)<br>Fake DNS, HTTP & SMTP"]
-        VAgent["Velociraptor Agent<br>Real-Time Memory Sensor"]
-    end
-
-    VMBR0 --> VServer
-    VMBR1 --> Victim
-    VMBR1 --> INetSim
-    VMBR1 --> VAgent
-
-    Victim -->|"Trapped L2 Traffic"| INetSim
-    VServer -.->|"Dedicated mTLS Channel"| VAgent
+    Victim -.->|"Isolated mTLS"| VServer
 ```
 
 ### Subnet Isolation Policy
