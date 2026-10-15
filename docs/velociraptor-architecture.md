@@ -6,18 +6,11 @@
 
 ## 📊 Forensic Platform Hardware Benchmark
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│             FORENSIC BENCHMARK: HOMELAB HIGH-DENSITY PROFILE           │
-├────────────────────────┬─────────────┬─────────────┬───────────────────┤
-│ Platform               │ Idle RAM    │ Average CPU │ Monthly Storage   │
-├────────────────────────┼─────────────┼─────────────┼───────────────────┤
-│ Wazuh + OpenSearch     │ ~6,200 MB   │ 12 - 25%    │ ~45 GB            │
-│ Splunk Enterprise      │ ~4,800 MB   │ 10 - 18%    │ ~60 GB            │
-│ Velociraptor Server    │ 67 MB       │ < 1.5%      │ < 2 GB            │
-└────────────────────────┴─────────────┴─────────────┴───────────────────┘
-  Memory Footprint Reduction: 98.9%
-```
+| Forensic Platform | Idle RAM Baseline | Host CPU Overhead | Monthly Storage IO | SRE Footprint Reduction |
+| :--- | :---: | :---: | :---: | :---: |
+| **Wazuh + OpenSearch** | ~6,200 MB | 12% – 25% | ~45 GB | Heavy SIEM Cluster |
+| **Splunk Enterprise** | ~4,800 MB | 10% – 18% | ~60 GB | Enterprise Proprietary |
+| **Velociraptor Server** | **67 MB** | **< 1.5%** | **< 2 GB** | **98.9% Physical RAM Reduction** |
 
 ---
 

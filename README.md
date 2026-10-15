@@ -18,18 +18,11 @@ While conventional Wazuh, Elastic Security, or Splunk clusters require between *
 * **VQL (Velociraptor Query Language):** Live memory-speed anomaly hunting across endpoints, collecting only necessary forensic artifacts.
 * **Storage Reduction:** Eliminates terabytes of verbose log indexing; artifacts are pulled on demand via declarative queries.
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│               HOMELAB FORENSIC RESOURCE CONSUMPTION BENCHMARK          │
-├────────────────────────┬─────────────┬─────────────┬───────────────────┤
-│ Platform               │ Idle RAM    │ Average CPU │ Monthly Disk I/O  │
-├────────────────────────┼─────────────┼─────────────┼───────────────────┤
-│ Wazuh + OpenSearch     │ ~6,200 MB   │ 12 - 25%    │ ~45 GB (Indices)  │
-│ Splunk Enterprise      │ ~4,800 MB   │ 10 - 18%    │ ~60 GB (Indexed)  │
-│ Velociraptor (Go Core) │ 67 MB       │ < 1.5%      │ < 2 GB (Raw DFIR) │
-└────────────────────────┴─────────────┴─────────────┴───────────────────┤
-  Hardware Efficiency: 98.9% physical RAM reduction!
-```
+| Forensic Platform | Idle RAM Baseline | Average Host CPU | Monthly NVMe Disk I/O | SRE Hardware Efficiency |
+| :--- | :---: | :---: | :---: | :---: |
+| **Wazuh + OpenSearch** | ~6,200 MB | 12% – 25% | ~45 GB (JVM Indices) | Heavy SIEM Stack |
+| **Splunk Enterprise** | ~4,800 MB | 10% – 18% | ~60 GB (Indexed Logs) | Enterprise Proprietary |
+| **Velociraptor (Go musl)** | **67 MB** | **< 1.5%** | **< 2 GB (Raw DFIR)** | **98.9% Physical RAM Reduction** |
 
 ---
 

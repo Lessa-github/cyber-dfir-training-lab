@@ -25,18 +25,11 @@ The platform allows safe detonating of malware inside an **air-gapped sandbox (`
 
 Enterprise SIEMs like Wazuh, Elastic Security, and Splunk require substantial memory and disk overhead just to maintain the log ingestion pipeline. This lab adopts surgical on-demand endpoint querying:
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│               HOMELAB FORENSIC RESOURCE CONSUMPTION BENCHMARK          │
-├────────────────────────┬─────────────┬─────────────┬───────────────────┤
-│ Platform               │ Idle RAM    │ Average CPU │ Monthly Disk I/O  │
-├────────────────────────┼─────────────┼─────────────┼───────────────────┤
-│ Wazuh + OpenSearch     │ ~6,200 MB   │ 12 - 25%    │ ~45 GB (Indices)  │
-│ Splunk Enterprise      │ ~4,800 MB   │ 10 - 18%    │ ~60 GB (Indexed)  │
-│ Velociraptor (Go Core) │ 67 MB       │ < 1.5%      │ < 2 GB (Raw DFIR) │
-└────────────────────────┴─────────────┴─────────────┴───────────────────┤
-  Hardware Efficiency: 98.9% physical RAM reduction!
-```
+| Forensic Platform | Idle RAM Baseline | Average Host CPU | Monthly NVMe Disk I/O | SRE Hardware Efficiency |
+| :--- | :---: | :---: | :---: | :---: |
+| **Wazuh + OpenSearch** | ~6,200 MB | 12% – 25% | ~45 GB (JVM Indices) | Heavy SIEM Stack |
+| **Splunk Enterprise** | ~4,800 MB | 10% – 18% | ~60 GB (Indexed Logs) | Enterprise Proprietary |
+| **Velociraptor (Go musl)** | **67 MB** | **< 1.5%** | **< 2 GB (Raw DFIR)** | **98.9% Physical RAM Reduction** |
 
 Instead of indexing millions of harmless system events into an SSD-wearing database, the analyst queries live endpoint memory at native speed using VQL.
 
