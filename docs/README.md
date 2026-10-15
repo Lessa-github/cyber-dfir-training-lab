@@ -139,6 +139,7 @@ Options:
 ## 🔗 Connected Portals & Repositories :id=connected-portals
 
 * 🏛️ **[Homelab Zero-Trust](https://lessa-github.github.io/homelab-zero-trust-infra/)** — Network Topology, Proxmox VE & SRE Hardening.
+* 📦 **[Curated GitHub Repository Directory](https://lessa-github.github.io/homelab-zero-trust-infra/#/?id=vetted-repositories)** — Active, Decommissioned, Roadmap & MCP Stacks.
 * 🧠 **[Sovereign AI Workspace](https://lessa-github.github.io/sovereign-ai-workspace/)** — Multi-Provider Gateway, Caveman Compression & Private Search.
 * ⚰️ **[Homelab Graveyard & Lessons Learned](https://lessa-github.github.io/homelab-graveyard-and-lessons-learned/)** — SRE Post-Mortems on Decommissioned Stacks.
 * 🌐 **[Gabriel Lessa Portfolio](https://lessa-github.github.io/gabriel-portfolio/)** — Cybersecurity Risk Management & Homelab Engineering.
